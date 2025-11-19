@@ -1,0 +1,235 @@
+# ============================================
+# OpenAI TTS Time Reminders (Swedish)
+# ============================================
+# Better quality voice announcements using OpenAI TTS
+# with Swedish language support
+#
+# SETUP:
+# 1. Get OpenAI API key (see OPENAI_TTS_SETUP.md)
+# 2. Add OpenAI TTS to configuration.yaml (see below)
+# 3. Replace 'media_player.living_room_speaker' with your speaker entity ID
+# 4. Copy automations to your Home Assistant
+# ============================================
+
+# ============================================
+# CONFIGURATION.YAML - Add this section
+# ============================================
+# tts:
+#   - platform: openai_tts
+#     api_key: YOUR_OPENAI_API_KEY_HERE
+#     voice: nova  # Options: alloy, echo, fable, onyx, nova, shimmer
+
+# ============================================
+# HELPER SCRIPT
+# ============================================
+
+script:
+  announce_time_and_countdown_swedish:
+    alias: "Meddela tid och nedräkning (Svenska)"
+    description: "Meddelar nuvarande tid och nedräkning till måltid på svenska"
+    fields:
+      speaker:
+        description: "Media player entity ID"
+        example: "media_player.living_room_speaker"
+      target_time:
+        description: "Måltid i 24-timmarsformat (HH:MM)"
+        example: "08:00"
+      announce_current_time:
+        description: "Om nuvarande tid ska meddelas"
+        example: true
+    sequence:
+      - if:
+          - condition: template
+            value_template: "{{ announce_current_time | default(true) }}"
+        then:
+          - service: tts.openai_say
+            target:
+              entity_id: "{{ speaker }}"
+            data:
+              message: >
+                Klockan är nu {{ now().strftime('%-H') }}.
+      - delay:
+          seconds: 2
+      - service: tts.openai_say
+        target:
+          entity_id: "{{ speaker }}"
+        data:
+          message: >
+            {% set target = today_at(target_time) %}
+            {% if now() > target %}
+              {% set target = target + timedelta(days=1) %}
+            {% endif %}
+            {% set diff = (target - now()).total_seconds() / 60 %}
+            {% set hours = (diff / 60) | int %}
+            {% set minutes = (diff % 60) | int %}
+            {% if hours > 0 %}
+              {% if minutes > 0 %}
+                {{ hours }} {% if hours == 1 %}timme{% else %}timmar{% endif %} och {{ minutes }} minuter kvar till klockan {{ target.strftime('%-H:%M') }}.
+              {% else %}
+                {{ hours }} {% if hours == 1 %}timme{% else %}timmar{% endif %} kvar till klockan {{ target.strftime('%-H:%M') }}.
+              {% endif %}
+            {% else %}
+              {{ minutes }} minuter kvar till klockan {{ target.strftime('%-H:%M') }}.
+            {% endif %}
+
+# ============================================
+# MORNING ROUTINE AUTOMATIONS (SWEDISH)
+# ============================================
+
+automation:
+  # 7:00 - Första morgonmeddelandet
+  - id: morning_reminder_swedish_0700
+    alias: "Morgonpåminnelse - 07:00"
+    description: "Meddela tid klockan 7:00 med nedräkning till 8:00"
+    trigger:
+      - platform: time
+        at: "07:00:00"
+    condition:
+      # Endast vardagar
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: script.announce_time_and_countdown_swedish
+        data:
+          speaker: media_player.living_room_speaker  # ÄNDRA DETTA
+          target_time: "08:00"
+          announce_current_time: true
+
+  # 7:15 - 45 minuter kvar
+  - id: morning_reminder_swedish_0715
+    alias: "Morgonpåminnelse - 07:15"
+    description: "Meddela tid klockan 7:15 med nedräkning"
+    trigger:
+      - platform: time
+        at: "07:15:00"
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: script.announce_time_and_countdown_swedish
+        data:
+          speaker: media_player.living_room_speaker  # ÄNDRA DETTA
+          target_time: "08:00"
+          announce_current_time: true
+
+  # 7:30 - 30 minuter kvar
+  - id: morning_reminder_swedish_0730
+    alias: "Morgonpåminnelse - 07:30"
+    description: "Meddela tid klockan 7:30 med nedräkning"
+    trigger:
+      - platform: time
+        at: "07:30:00"
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: script.announce_time_and_countdown_swedish
+        data:
+          speaker: media_player.living_room_speaker  # ÄNDRA DETTA
+          target_time: "08:00"
+          announce_current_time: true
+
+  # 7:45 - 15 minuter kvar
+  - id: morning_reminder_swedish_0745
+    alias: "Morgonpåminnelse - 07:45"
+    description: "Meddela tid klockan 7:45 med nedräkning"
+    trigger:
+      - platform: time
+        at: "07:45:00"
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: script.announce_time_and_countdown_swedish
+        data:
+          speaker: media_player.living_room_speaker  # ÄNDRA DETTA
+          target_time: "08:00"
+          announce_current_time: true
+
+  # 7:55 - Sista varningen
+  - id: morning_reminder_swedish_0755
+    alias: "Morgonpåminnelse - 07:55"
+    description: "Sista nedräkningsvarningen"
+    trigger:
+      - platform: time
+        at: "07:55:00"
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: tts.openai_say
+        target:
+          entity_id: media_player.living_room_speaker  # ÄNDRA DETTA
+        data:
+          message: "Uppmärksamhet! Bara 5 minuter kvar till klockan 8. Dags att göra klart och göra dig redo!"
+
+# ============================================
+# ANPASSADE MEDDELANDEN
+# ============================================
+# Exempel på andra användbara påminnelser
+
+  # Borsta tänderna-påminnelse
+  # - service: tts.openai_say
+  #   data:
+  #     entity_id: media_player.living_room_speaker
+  #     message: "Glöm inte att borsta tänderna!"
+
+  # Packa skolväskan
+  # - service: tts.openai_say
+  #   data:
+  #     entity_id: media_player.living_room_speaker
+  #     message: "Dags att ta din skolväska och dina skor!"
+
+  # Äta frukost
+  # - service: tts.openai_say
+  #   data:
+  #     entity_id: media_player.living_room_speaker
+  #     message: "Dags för frukost!"
+
+# ============================================
+# HELGSCHEMA (VALFRITT)
+# ============================================
+# Avkommentera om du vill ha olika påminnelser på helgen
+
+#  - id: weekend_reminder_swedish_0800
+#    alias: "Helgpåminnelse - 08:00"
+#    description: "Lugnare morgonuppvakning på helgen"
+#    trigger:
+#      - platform: time
+#        at: "08:00:00"
+#    condition:
+#      - condition: time
+#        weekday:
+#          - sat
+#          - sun
+#    action:
+#      - service: tts.openai_say
+#        target:
+#          entity_id: media_player.living_room_speaker
+#        data:
+#          message: "God morgon! Klockan är 8. Ha en trevlig helg!"

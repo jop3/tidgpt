@@ -2,10 +2,31 @@
 
 Choose the method that works best for you:
 
-## Option 1: Home Assistant (Recommended if you already have it)
+## ⭐ Recommended: Home Assistant with OpenAI TTS (Swedish)
 
-**Pros**: Simple, integrated, visual interface, easy automation management
+**Best option if you need Swedish language and better voice quality**
+
+**Pros**: Natural-sounding Swedish voices, kids will actually listen, very affordable (~1 SEK/month)
+**Setup Time**: 10 minutes
+
+1. Get OpenAI API key (takes 5 minutes, see guide)
+2. Add OpenAI TTS to Home Assistant configuration
+3. Copy Swedish automations from `home_assistant_automations_openai_swedish.yaml`
+4. Replace `media_player.living_room_speaker` with your speaker
+
+**See**: [OPENAI_TTS_SETUP.md](OPENAI_TTS_SETUP.md) for detailed instructions
+
+**Voice samples**: Try voices like `nova` (calm), `echo` (friendly), `fable` (energetic)
+
+---
+
+## Option 1: Home Assistant with Google Translate (Basic)
+
+**Free option with robotic English voice**
+
+**Pros**: Simple, integrated, visual interface, completely free
 **Setup Time**: 5-10 minutes
+**Cons**: Robotic voice, English only (or poor Swedish)
 
 1. Find your Google Home speaker entity ID in Home Assistant
 2. Copy the automations from `home_assistant_automations.yaml`
@@ -49,15 +70,16 @@ Choose the method that works best for you:
 
 ## Quick Comparison
 
-| Feature | Home Assistant | Python App |
-|---------|---------------|------------|
-| Setup Complexity | Easy | Medium |
-| Visual Interface | ✅ Yes | ❌ No |
-| Runs Independently | ❌ No | ✅ Yes |
-| Multiple Speakers | ✅ Easy | ✅ Possible |
-| Combine with Lights/Music | ✅ Yes | ❌ No |
-| Works without HA | ❌ No | ✅ Yes |
-| Can Run on Any Computer | Depends | ✅ Yes |
+| Feature | HA + OpenAI TTS | HA + Google TTS | Python App |
+|---------|----------------|-----------------|------------|
+| Setup Complexity | Easy | Easy | Medium |
+| Voice Quality | ⭐⭐⭐⭐⭐ Natural | ⭐⭐ Robotic | ⭐⭐ Robotic |
+| Swedish Support | ✅ Excellent | ⚠️ Poor | ⚠️ Poor |
+| Cost | ~1 SEK/month | Free | Free |
+| Visual Interface | ✅ Yes | ✅ Yes | ❌ No |
+| Multiple Speakers | ✅ Easy | ✅ Easy | ✅ Possible |
+| Works Offline | ❌ No | ⚠️ Limited | ⚠️ Limited |
+| Kids Will Listen | ✅ Yes | ⚠️ Maybe | ⚠️ Maybe |
 
 ---
 
@@ -90,11 +112,22 @@ python time_reminder.py --countdown 08:00
 
 ## Test in Home Assistant
 
+### Test OpenAI TTS (Swedish)
+1. Go to **Developer Tools** → **Services**
+2. Select `tts.openai_say`
+3. Fill in:
+   ```yaml
+   entity_id: media_player.your_speaker
+   message: "Klockan är nu 7. En timme kvar till klockan 8."
+   ```
+4. Click **Call Service**
+
+### Test Google TTS (English)
 1. Go to **Developer Tools** → **Services**
 2. Select `tts.google_translate_say`
 3. Fill in:
    ```yaml
    entity_id: media_player.your_speaker
-   message: "Test message"
+   message: "The time is now 7 AM"
    ```
 4. Click **Call Service**
