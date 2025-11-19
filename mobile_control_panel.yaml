@@ -1,0 +1,160 @@
+# ============================================
+# MOBILE-FRIENDLY CONTROL PANEL
+# ============================================
+# Easy on/off controls for your phone
+# Add this to your Home Assistant dashboard
+#
+# HOW TO ADD:
+# 1. Open Home Assistant app on your phone
+# 2. Go to a dashboard (or create new one)
+# 3. Click the pencil icon (Edit Dashboard)
+# 4. Click "+ Add Card" at the bottom
+# 5. Scroll down and click "Manual"
+# 6. Paste this YAML
+# 7. Click Save
+# ============================================
+
+# ============================================
+# SIMPLE ON/OFF CONTROL (Best for Phone)
+# ============================================
+
+type: vertical-stack
+cards:
+  - type: markdown
+    content: |
+      ## ⏰ Morgonpåminnelser
+      Aktivera/avaktivera tidsmeddelanden
+
+  # Master control - turn all on/off at once
+  - type: entities
+    entities:
+      - entity: input_boolean.morning_reminders_enabled
+        name: "Alla morgonpåminnelser"
+    title: Huvudkontroll
+
+  # Individual time controls
+  - type: entities
+    title: Schema
+    entities:
+      - entity: automation.morning_reminder_swedish_0700
+        name: "⏰ 07:00"
+      - entity: automation.morning_reminder_swedish_0715
+        name: "⏰ 07:15"
+      - entity: automation.morning_reminder_swedish_0730
+        name: "⏰ 07:30"
+      - entity: automation.morning_reminder_swedish_0745
+        name: "⏰ 07:45"
+      - entity: automation.morning_reminder_swedish_0755
+        name: "⏰ 07:55 (sista varningen)"
+
+  # Quick action buttons
+  - type: horizontal-stack
+    cards:
+      - type: button
+        name: Test nu
+        icon: mdi:play-circle
+        tap_action:
+          action: call-service
+          service: script.announce_time_and_countdown_swedish
+          service_data:
+            speaker: media_player.living_room_speaker  # ÄNDRA DETTA
+            target_time: "08:00"
+
+      - type: button
+        name: Stäng av alla
+        icon: mdi:bell-off
+        tap_action:
+          action: call-service
+          service: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.morning_reminders_enabled
+
+# ============================================
+# REQUIRED: Add this to configuration.yaml
+# ============================================
+# This creates the master on/off switch
+#
+# input_boolean:
+#   morning_reminders_enabled:
+#     name: Morgonpåminnelser aktiverade
+#     initial: true
+#     icon: mdi:alarm
+
+# ============================================
+# REQUIRED: Update automations
+# ============================================
+# Add this condition to EACH automation so the master
+# switch can turn them all off:
+#
+# condition:
+#   - condition: state
+#     entity_id: input_boolean.morning_reminders_enabled
+#     state: "on"
+#   - condition: time
+#     weekday:
+#       - mon
+#       - tue
+#       - wed
+#       - thu
+#       - fri
+
+# ============================================
+# ALTERNATIVE: EVEN SIMPLER (No master switch)
+# ============================================
+# Just list the automations for quick toggle:
+
+# type: entities
+# title: ⏰ Morgonpåminnelser
+# entities:
+#   - entity: automation.morning_reminder_swedish_0700
+#     name: "Kl 07:00"
+#   - entity: automation.morning_reminder_swedish_0715
+#     name: "Kl 07:15"
+#   - entity: automation.morning_reminder_swedish_0730
+#     name: "Kl 07:30"
+#   - entity: automation.morning_reminder_swedish_0745
+#     name: "Kl 07:45"
+#   - entity: automation.morning_reminder_swedish_0755
+#     name: "Kl 07:55"
+# show_header_toggle: true  # Shows "all on/off" toggle at top
+
+# ============================================
+# ADVANCED: Scene-Based Control
+# ============================================
+# Create scenes for different schedules:
+#
+# Scenes to create in Home Assistant:
+# 1. "Normal morgon" - All reminders on
+# 2. "Lov/helg" - All reminders off
+# 3. "Sen morgon" - Only 7:45 and 7:55 on
+#
+# Then add this card:
+
+# type: horizontal-stack
+# cards:
+#   - type: button
+#     name: Normal morgon
+#     icon: mdi:alarm
+#     tap_action:
+#       action: call-service
+#       service: scene.turn_on
+#       target:
+#         entity_id: scene.normal_morgon
+#
+#   - type: button
+#     name: Lov/Helg
+#     icon: mdi:alarm-off
+#     tap_action:
+#       action: call-service
+#       service: scene.turn_on
+#       target:
+#         entity_id: scene.lov_helg
+#
+#   - type: button
+#     name: Sen morgon
+#     icon: mdi:alarm-snooze
+#     tap_action:
+#       action: call-service
+#       service: scene.turn_on
+#       target:
+#         entity_id: scene.sen_morgon

@@ -9,6 +9,7 @@ This guide will help you set up automated time announcements on your Google Home
 - Weekday-only scheduling (won't disturb weekends)
 - Customizable times and target deadlines
 - Works with any Google Home or Chromecast speaker
+- **Easy on/off control from your phone** - See [MOBILE_CONTROL_GUIDE.md](MOBILE_CONTROL_GUIDE.md)
 
 ## Prerequisites
 
