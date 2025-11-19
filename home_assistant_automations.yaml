@@ -1,0 +1,222 @@
+# ============================================
+# Time Reminder Automations for Home Assistant
+# ============================================
+# Announces time and countdowns to Google Home speakers
+# to help kids stay on track during morning routines
+#
+# SETUP:
+# 1. Replace 'media_player.living_room_speaker' with your actual speaker entity ID
+#    Find it in Home Assistant: Settings > Devices & Services > Media Players
+# 2. Copy these automations to your Home Assistant configuration
+# 3. Reload automations or restart Home Assistant
+#
+# To find your speaker entity ID:
+# - Go to Settings > Devices & Services > Entities
+# - Search for your Google Home speaker name
+# - Copy the entity_id (e.g., media_player.kitchen_speaker)
+# ============================================
+
+# Helper script to calculate time remaining
+# Add this to configuration.yaml under 'script:'
+script:
+  announce_time_and_countdown:
+    alias: "Announce Time and Countdown"
+    description: "Announces current time and countdown to target time"
+    fields:
+      speaker:
+        description: "Media player entity ID"
+        example: "media_player.living_room_speaker"
+      target_time:
+        description: "Target time in 24-hour format (HH:MM)"
+        example: "08:00"
+      announce_current_time:
+        description: "Whether to announce current time"
+        example: true
+    sequence:
+      - if:
+          - condition: template
+            value_template: "{{ announce_current_time | default(true) }}"
+        then:
+          - service: tts.google_translate_say
+            target:
+              entity_id: "{{ speaker }}"
+            data:
+              message: >
+                The time is now {{ now().strftime('%-I:%M %p') }}.
+      - delay:
+          seconds: 2
+      - service: tts.google_translate_say
+        target:
+          entity_id: "{{ speaker }}"
+        data:
+          message: >
+            {% set target = today_at(target_time) %}
+            {% if now() > target %}
+              {% set target = target + timedelta(days=1) %}
+            {% endif %}
+            {% set diff = (target - now()).total_seconds() / 60 %}
+            {% set hours = (diff / 60) | int %}
+            {% set minutes = (diff % 60) | int %}
+            {% if hours > 0 %}
+              {% if minutes > 0 %}
+                {{ hours }} hours and {{ minutes }} minutes until {{ target.strftime('%-I:%M %p') }}.
+              {% else %}
+                {{ hours }} hours until {{ target.strftime('%-I:%M %p') }}.
+              {% endif %}
+            {% else %}
+              {{ minutes }} minutes until {{ target.strftime('%-I:%M %p') }}.
+            {% endif %}
+
+# ============================================
+# MORNING ROUTINE AUTOMATIONS
+# ============================================
+# Customize the times and speaker below
+
+automation:
+  # 7:00 AM - First morning announcement
+  - id: morning_reminder_0700
+    alias: "Morning Reminder - 7:00 AM"
+    description: "Announce time at 7:00 AM with countdown to 8:00 AM"
+    trigger:
+      - platform: time
+        at: "07:00:00"
+    condition:
+      # Only run on weekdays (Monday=1, Sunday=7)
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: script.announce_time_and_countdown
+        data:
+          speaker: media_player.living_room_speaker  # CHANGE THIS
+          target_time: "08:00"
+          announce_current_time: true
+
+  # 7:15 AM - 45 minutes until departure
+  - id: morning_reminder_0715
+    alias: "Morning Reminder - 7:15 AM"
+    description: "Announce time at 7:15 AM with countdown"
+    trigger:
+      - platform: time
+        at: "07:15:00"
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: script.announce_time_and_countdown
+        data:
+          speaker: media_player.living_room_speaker  # CHANGE THIS
+          target_time: "08:00"
+          announce_current_time: true
+
+  # 7:30 AM - 30 minutes until departure
+  - id: morning_reminder_0730
+    alias: "Morning Reminder - 7:30 AM"
+    description: "Announce time at 7:30 AM with countdown"
+    trigger:
+      - platform: time
+        at: "07:30:00"
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: script.announce_time_and_countdown
+        data:
+          speaker: media_player.living_room_speaker  # CHANGE THIS
+          target_time: "08:00"
+          announce_current_time: true
+
+  # 7:45 AM - 15 minutes until departure
+  - id: morning_reminder_0745
+    alias: "Morning Reminder - 7:45 AM"
+    description: "Announce time at 7:45 AM with countdown"
+    trigger:
+      - platform: time
+        at: "07:45:00"
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: script.announce_time_and_countdown
+        data:
+          speaker: media_player.living_room_speaker  # CHANGE THIS
+          target_time: "08:00"
+          announce_current_time: true
+
+  # 7:55 AM - Final 5 minute warning
+  - id: morning_reminder_0755
+    alias: "Morning Reminder - 7:55 AM"
+    description: "Final countdown warning"
+    trigger:
+      - platform: time
+        at: "07:55:00"
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: tts.google_translate_say
+        target:
+          entity_id: media_player.living_room_speaker  # CHANGE THIS
+        data:
+          message: "Attention! Only 5 minutes until 8 AM. Time to finish up and get ready!"
+
+# ============================================
+# OPTIONAL: Weekend reminders (different schedule)
+# ============================================
+# Uncomment these if you want different reminders on weekends
+
+#  - id: weekend_reminder_0800
+#    alias: "Weekend Reminder - 8:00 AM"
+#    description: "Gentler weekend wake-up"
+#    trigger:
+#      - platform: time
+#        at: "08:00:00"
+#    condition:
+#      - condition: time
+#        weekday:
+#          - sat
+#          - sun
+#    action:
+#      - service: tts.google_translate_say
+#        target:
+#          entity_id: media_player.living_room_speaker
+#        data:
+#          message: "Good morning! It's 8 AM. Have a great weekend!"
+
+# ============================================
+# OPTIONAL: Announce to multiple speakers
+# ============================================
+# If you want to announce to multiple speakers at once:
+#
+# Replace:
+#   entity_id: media_player.living_room_speaker
+#
+# With:
+#   entity_id:
+#     - media_player.living_room_speaker
+#     - media_player.kids_room_speaker
+#     - media_player.kitchen_speaker

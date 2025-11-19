@@ -1,6 +1,17 @@
 # Time Reminder App for Google Home
 
-A simple Python application that announces the time and countdowns to your Google Home speakers, perfect for helping kids stay on track during morning routines.
+Announces the time and countdowns to your Google Home speakers, perfect for helping kids stay on track during morning routines.
+
+## 🏠 Have Home Assistant? Use That Instead!
+
+If you already have Home Assistant, use the **[Home Assistant automations](HOME_ASSISTANT_SETUP.md)** instead - they're simpler and more integrated. This Python app is for standalone use or if you don't have Home Assistant.
+
+**Quick Links**:
+- **[Home Assistant Setup](HOME_ASSISTANT_SETUP.md)** - For Home Assistant users (recommended)
+- **[Quick Start Guide](QUICKSTART.md)** - Compare both options
+- **Python App Setup** - Continue reading below
+
+---
 
 ## Features
 

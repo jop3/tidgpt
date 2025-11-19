@@ -1,0 +1,131 @@
+# ============================================
+# Home Assistant Dashboard Card
+# ============================================
+# Manual control buttons for time announcements
+# Add this to your Home Assistant dashboard
+#
+# HOW TO ADD:
+# 1. Go to your Home Assistant dashboard
+# 2. Click the three dots → Edit Dashboard
+# 3. Click Add Card → Manual
+# 4. Paste this YAML
+# 5. Replace media_player.living_room_speaker with your speaker
+# ============================================
+
+type: vertical-stack
+cards:
+  - type: markdown
+    content: |
+      ## ⏰ Time Reminders
+      Quick announcements for the kids
+
+  - type: horizontal-stack
+    cards:
+      - type: button
+        name: Announce Time
+        icon: mdi:clock-outline
+        tap_action:
+          action: call-service
+          service: script.announce_time_and_countdown
+          service_data:
+            speaker: media_player.living_room_speaker
+            target_time: "08:00"
+            announce_current_time: true
+
+      - type: button
+        name: 30 Min Warning
+        icon: mdi:clock-alert-outline
+        tap_action:
+          action: call-service
+          service: tts.google_translate_say
+          service_data:
+            entity_id: media_player.living_room_speaker
+            message: "30 minutes until we need to leave!"
+
+  - type: horizontal-stack
+    cards:
+      - type: button
+        name: 15 Min Warning
+        icon: mdi:clock-fast
+        tap_action:
+          action: call-service
+          service: tts.google_translate_say
+          service_data:
+            entity_id: media_player.living_room_speaker
+            message: "15 minutes until we need to leave!"
+
+      - type: button
+        name: 5 Min Warning
+        icon: mdi:alarm-light
+        tap_action:
+          action: call-service
+          service: tts.google_translate_say
+          service_data:
+            entity_id: media_player.living_room_speaker
+            message: "Only 5 minutes left! Time to finish up!"
+
+  - type: horizontal-stack
+    cards:
+      - type: button
+        name: Brush Teeth
+        icon: mdi:tooth-outline
+        tap_action:
+          action: call-service
+          service: tts.google_translate_say
+          service_data:
+            entity_id: media_player.living_room_speaker
+            message: "Don't forget to brush your teeth!"
+
+      - type: button
+        name: Get Backpack
+        icon: mdi:bag-personal-outline
+        tap_action:
+          action: call-service
+          service: tts.google_translate_say
+          service_data:
+            entity_id: media_player.living_room_speaker
+            message: "Time to get your backpack and shoes!"
+
+# ============================================
+# Alternative: Simple Entity Cards
+# ============================================
+# If you prefer switches to enable/disable automations:
+
+# type: entities
+# entities:
+#   - entity: automation.morning_reminder_0700
+#     name: "7:00 AM Reminder"
+#   - entity: automation.morning_reminder_0715
+#     name: "7:15 AM Reminder"
+#   - entity: automation.morning_reminder_0730
+#     name: "7:30 AM Reminder"
+#   - entity: automation.morning_reminder_0745
+#     name: "7:45 AM Reminder"
+#   - entity: automation.morning_reminder_0755
+#     name: "7:55 AM Reminder"
+# title: Morning Reminder Schedule
+
+# ============================================
+# Advanced: Input Select for Target Time
+# ============================================
+# If you want to easily change the target time:
+#
+# 1. Add to configuration.yaml:
+# input_select:
+#   morning_target_time:
+#     name: Target Departure Time
+#     options:
+#       - "07:30"
+#       - "08:00"
+#       - "08:30"
+#     initial: "08:00"
+#     icon: mdi:clock-outline
+#
+# 2. In your automations, use:
+#   target_time: "{{ states('input_select.morning_target_time') }}"
+#
+# 3. Add to dashboard:
+# type: entities
+# entities:
+#   - entity: input_select.morning_target_time
+# title: Set Departure Time
