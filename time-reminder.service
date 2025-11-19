@@ -1,0 +1,14 @@
+[Unit]
+Description=Time Reminder App for Google Home
+After=network.target
+
+[Service]
+Type=simple
+User=your_username
+WorkingDirectory=/path/to/tidgpt
+ExecStart=/usr/bin/python3 /path/to/tidgpt/time_reminder.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

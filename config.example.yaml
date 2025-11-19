@@ -1,0 +1,46 @@
+# Time Reminder Configuration
+# Copy this file to config.yaml and customize for your needs
+
+# Name of your Google Home speaker (must match exactly)
+# Run with --list-devices to see available speakers
+speaker_name: "Living Room speaker"
+
+# Schedule for time announcements
+# Each entry runs at the specified time
+schedule:
+  # 7:00 AM - Wake up announcement
+  - time: "07:00"
+    announce_time: true
+    countdowns:
+      - "08:00"  # Time until school departure
+
+  # 7:15 AM - 45 minutes until departure
+  - time: "07:15"
+    announce_time: true
+    countdowns:
+      - "08:00"
+
+  # 7:30 AM - 30 minutes until departure
+  - time: "07:30"
+    announce_time: true
+    countdowns:
+      - "08:00"
+
+  # 7:45 AM - 15 minutes until departure
+  - time: "07:45"
+    announce_time: true
+    countdowns:
+      - "08:00"
+
+  # 7:55 AM - Final 5 minute warning
+  - time: "07:55"
+    announce_time: false
+    countdowns:
+      - "08:00"
+
+# Example: Multiple target times
+# - time: "07:30"
+#   announce_time: true
+#   countdowns:
+#     - "08:00"  # School time
+#     - "08:30"  # Bus time
